@@ -16,5 +16,6 @@ namespace ticket_management.contract
         PagedList<Ticket> GetTickets(string agentEmailId, string userEmailId, string priority, string status, int pageno, int size);
         Task<List<TopAgentsDto>> GetTopAgents();
         Task<Analytics> PushAnalytics();
+        Task GetAgents();
     }
 }

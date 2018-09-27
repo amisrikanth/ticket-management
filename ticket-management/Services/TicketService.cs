@@ -21,7 +21,10 @@ namespace ticket_management.Services
 
         public TicketService(IOptions<Settings> settings)
         {
-            _context = new TicketContext(settings);  
+            _context = new TicketContext(settings);
+            GetAgents().Wait();
+            GetEndUsers().Wait();
+
         }
 
         //done
@@ -217,11 +220,13 @@ namespace ticket_management.Services
             Console.WriteLine(ticketscore.Sum());
             Console.WriteLine(totalticketscore.Count());
             double csatscore = (double)ticketscore.Sum() / totalticketscore.Count();
-            Analytics scheduledData = new Analytics();
-            scheduledData.Date = date.Date;
-            scheduledData.Customerid = '1';
-            scheduledData.Avgresolutiontime = "5:0:0";
-            scheduledData.Csatscore = csatscore;
+            Analytics scheduledData = new Analytics
+            {
+                Date = date.Date,
+                Customerid = '1',
+                Avgresolutiontime = "5:0:0",
+                Csatscore = csatscore
+            };
             await _context.AnalyticsCollection.InsertOneAsync(scheduledData);
             return scheduledData;
         }
@@ -255,6 +260,31 @@ namespace ticket_management.Services
 
             return agentsList;
         }
+
+        public async Task GetAgents()
+        {
+            HttpClient httpclient = new HttpClient();
+            string url = "https://localhost:44371/api/agents";
+            var response = await httpclient.GetAsync(url);
+            var result = await response.Content.ReadAsStringAsync();
+            Agents[] responsejson = JsonConvert
+                    .DeserializeObject<Agents[]>(result);
+            await _context.AgentsCollection.InsertManyAsync(responsejson);
+
+        }
+
+
+        public async Task GetEndUsers()
+        {
+            HttpClient httpclient = new HttpClient();
+            string url = "http://35.221.125.153:8082/api/EndUsers";
+            var response = await httpclient.GetAsync(url);
+            var result = await response.Content.ReadAsStringAsync();
+            EndUser[] responsejson = JsonConvert
+                    .DeserializeObject<EndUser[]>(result);
+            await _context.EndUsersCollection.InsertManyAsync(responsejson);
+        }
+
     }
 
 }

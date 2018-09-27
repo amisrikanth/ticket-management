@@ -37,5 +37,21 @@ namespace ticket_management.Models
                 return _db.GetCollection<Analytics>("analytics");
             }
         }
+
+        public IMongoCollection<Agents> AgentsCollection
+        {
+            get
+            {
+                return _db.GetCollection<Agents>("agents");
+            }
+        }
+
+        public IMongoCollection<EndUser> EndUsersCollection
+        {
+            get
+            {
+                return _db.GetCollection<EndUser>("endUsers");
+            }
+        }
     }
 }
