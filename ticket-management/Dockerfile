@@ -1,8 +1,14 @@
-FROM microsoft/dotnet:2.1-sdk
-COPY . /app
+FROM microsoft/dotnet:2.2-sdk AS build-env
 WORKDIR /app
-RUN ["dotnet", "restore"]
-RUN ["dotnet", "build"]
-EXPOSE 5000
-RUN chmod +x docker_entrypoint.sh
-CMD /bin/bash docker_entrypoint.sh
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+# Build runtime image
+FROM microsoft/dotnet:2.2-aspnetcore-runtime
+WORKDIR /app
+EXPOSE 80
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "ticket_management.dll"]

@@ -87,10 +87,17 @@ namespace ticket_management.Controllers
         }
 
         [HttpGet("Analytics")]
-        public async Task<AnalyticsUIDto> GetAnalytics(string agentEmail)
+        public async Task<AnalyticsUIDto> GetAnalytics([FromHeader] string agentEmail)
         {
             return await _ticketService.GetAnalytics(agentEmail);
         }
+
+        [HttpGet()]
+        public IEnumerable<Ticket> Gettickets()
+        {
+            return  _ticketService.getTickets();
+        }
+
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateTicket([FromQuery] string query, [FromQuery] string userEmail)
@@ -119,9 +126,9 @@ namespace ticket_management.Controllers
 
         // PUT: api/Tickets/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditTicket([FromQuery]string ticketid, [FromQuery] string status, [FromQuery] string priority, [FromQuery] string intent, [FromQuery] int feedbackscore, [FromQuery] string agentemailid)
+        public async Task<IActionResult> EditTicket([FromRoute]string id, [FromQuery] string status, [FromQuery] string priority, [FromQuery] string intent, [FromQuery] int feedbackscore, [FromQuery] string agentemailid)
         {
-            await _ticketService.EditTicket(ticketid, status, priority, intent, feedbackscore, agentemailid);
+            await _ticketService.EditTicket(id, status, priority, intent, feedbackscore, agentemailid);
             return Ok();
         }
        

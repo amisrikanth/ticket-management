@@ -18,5 +18,6 @@ namespace ticket_management.contract
         Task<Analytics> PushAnalytics();
         Task GetAgents();
         Task<string> AssignEmail(string id);
+        IEnumerable<Ticket> getTickets();
     }
 }

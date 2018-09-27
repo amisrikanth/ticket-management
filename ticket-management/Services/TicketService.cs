@@ -27,6 +27,11 @@ namespace ticket_management.Services
 
         }
 
+        public IEnumerable<Ticket> getTickets()
+        {
+            return _context.TicketCollection.AsQueryable().ToList();
+        }
+
         //done
         public async Task<Ticket> GetById(string id)
         {
@@ -146,17 +151,17 @@ namespace ticket_management.Services
                 new List<AnalyticsCountDto> {
                     new AnalyticsCountDto
                     {
-                        Count = await _context.TicketCollection.AsQueryable().Where(x => (x.Status == "close" && x.AgentEmailid == agentemail)).CountAsync(),
+                        Count = await _context.TicketCollection.AsQueryable().Where(x => x.Status == "close").CountAsync(),
                         Tickettype = "Closed"
                     },
                     new AnalyticsCountDto
                     {
-                        Count = await _context.TicketCollection.AsQueryable().Where(x => (x.Status == "due" && x.AgentEmailid == agentemail)).CountAsync(),
+                        Count = await _context.TicketCollection.AsQueryable().Where(x => x.Status == "due").CountAsync(),
                         Tickettype = "Due"
                     },
                     new AnalyticsCountDto
                     {
-                        Count = await _context.TicketCollection.AsQueryable().Where(x => (x.Status == "open" && x.AgentEmailid == agentemail)).CountAsync(),
+                        Count = await _context.TicketCollection.AsQueryable().Where(x => x.Status == "open").CountAsync(),
                         Tickettype = "Open"
                     }
                 }
@@ -182,6 +187,7 @@ namespace ticket_management.Services
                         .Set(x => x.Intent, intent ?? ticket.Intent)
                         .Set(x => x.Feedbackscore, (feedbackscore == 0) ? 0 : ticket.Feedbackscore)
                         .Set(x => x.Closedon , (status == "close") ? DateTime.Now : ticket.Closedon)
+                        .Set(x => x.Closedby, (status == "close") ? agentemailid : ticket.Closedby)
                         .Set(x => x.UpdatedOn, DateTime.Now)
                         .Set(x=> x.UpdatedBy , agentemailid);           
             
