@@ -10,6 +10,7 @@ namespace ticket_management.Models
 {
     public class Agents
     {
+        [BsonElement("AgentId")]
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string AgentId { get; set; }

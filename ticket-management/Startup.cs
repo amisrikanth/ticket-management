@@ -61,7 +61,7 @@ namespace ticket_management
             //                               .ActionContext;
             //    return new UrlHelper(actionContext);
             //});
-            services.AddScoped<ITicketService, TicketService>();
+            services.AddSingleton<ITicketService, TicketService>();
 
             services.AddCors(
                 options => options.AddPolicy("allowaccess",

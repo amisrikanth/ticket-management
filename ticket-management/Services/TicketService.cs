@@ -75,21 +75,24 @@ namespace ticket_management.Services
 
         public async Task<string> AssignEmail(string id) {
             //_context.TicketCollection.AsQueryable().Where(x => x.TicketId == id).ToList()[0];            
-            string agentEmailId;
+            string agentEmailId = "";
+            var filterEmail = Builders<Ticket>.Filter;
             try
             {
                 var agentfilter = Builders<Agents>.Filter;
-                long ticketCount = _context.TicketCollection.AsQueryable().Where(x => x.AgentEmailid != "Bot").ToList().Count;
+                long ticketCount = await _context.TicketCollection.CountDocumentsAsync(new BsonDocument()) - await _context.TicketCollection.Find(filterEmail.Eq("AgentEmailid", "bot")).CountDocumentsAsync();
                 long agentCount = _context.AgentsCollection.CountDocuments(new BsonDocument());
+                
                 long agentId = (ticketCount + 1) % agentCount;
-                agentEmailId = _context.AgentsCollection.Find(agentfilter.Eq("AgentId", agentId)).SingleOrDefault().Email;
+                agentEmailId = _context.AgentsCollection.Find(agentfilter.Eq("Id", agentId)).ToList()[0].Email;
             }
-            catch {
+            catch (Exception e){
+                Console.WriteLine(e);
                 agentEmailId = "null";
             }
             var filter = Builders<Ticket>.Filter;
             var update = Builders<Ticket>.Update;
-            await _context.TicketCollection.FindOneAndUpdateAsync(filter.Eq("TicketId", id),update.Set("agentEmailid",agentEmailId));
+            await _context.TicketCollection.UpdateOneAsync(filter.Eq("TicketId", id),update.Set(x => x.AgentEmailid , agentEmailId));
             return agentEmailId;
         }
 
@@ -195,17 +198,6 @@ namespace ticket_management.Services
                 pageno = 1;
                 size = 20;
             }
-            // return _context.TicketCollection.Where(n =>
-            //(
-            //    n.Agentid == ((agentid != 0) ? agentid : n.Agentid) &&
-            //    n.Departmentid == ((departmentid != 0) ? departmentid : n.Departmentid) &&
-            //    n.Userid == ((userid != 0) ? userid : n.Userid) &&
-            //    n.Customerid == ((customerid != 0) ? customerid : n.Customerid) &&
-            //    n.Source == (String.IsNullOrEmpty(source) ? n.Source : source) &&
-            //    n.Priority == (String.IsNullOrEmpty(priority) ? n.Priority : priority) &&
-            //    n.Status.ToString() == (String.IsNullOrEmpty(status) ? n.Status.ToString() : status)
-            //)
-            //).Skip((pageno - 1) * size).Take(size);
 
             return new PagedList<Ticket>(_context.TicketCollection.AsQueryable().Where(x =>
             (string.IsNullOrEmpty(status) || x.Status == status) &&
@@ -213,10 +205,10 @@ namespace ticket_management.Services
             (string.IsNullOrEmpty(useremailid) || x.UserEmailId == useremailid) &&
             (string.IsNullOrEmpty(agentemailid) || x.AgentEmailid == agentemailid)
             ).ToList(), pageno, size);
-            //.Skip((pageno - 1) * size).Take(size).ToList();
+
             
         }
-
+        
         
         //Update analytics csat score //done
         public async Task<Analytics> PushAnalytics()
