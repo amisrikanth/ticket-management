@@ -8,8 +8,9 @@ namespace ticket_management.Models
     public class AnalyticsUIDto
     {
         public List<AnalyticsCountDto> Analyticscount { get ; set ; }
+
         public List<AvgResolutionTime> Avgresolutiontime { get ; set ; }
-        public List<AnalyticsCsatDto> Analyticscsat { get ; set ; }
+ public List<AnalyticsCsatDto> Analyticscsat { get ; set ; }
     }
     public class AnalyticsCsatDto
     {
@@ -21,6 +22,7 @@ namespace ticket_management.Models
         public string Tickettype { get ; set ; }
         public long Count { get ; set ; }
     }
+
     public class AvgResolutionTime
     {
         public string intent { get; set; }

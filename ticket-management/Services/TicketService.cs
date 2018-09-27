@@ -22,8 +22,8 @@ namespace ticket_management.Services
         public TicketService(IOptions<Settings> settings)
         {
             _context = new TicketContext(settings);
-        //    GetAgents().Wait();
-          //  GetEndUsers().Wait();
+            GetAgents().Wait();
+            GetEndUsers().Wait();
 
         }
 
@@ -58,6 +58,7 @@ namespace ticket_management.Services
             //string AgentEmailid
 
             var filter = Builders<Ticket>.Filter;
+
 
             var ticket = new TicketCount();
 
@@ -98,6 +99,7 @@ namespace ticket_management.Services
             Ticket ticket = new Ticket
             {
                 TicketId = ObjectId.GenerateNewId().ToString(),
+
                 AgentEmailid = "bot",
                 Closedby = null,
                 Closedon = null,
@@ -221,24 +223,22 @@ namespace ticket_management.Services
         {
             DateTime date = DateTime.Now;
             List<int?> ticketscore = new List<int?>();
+
             ticketscore = _context.TicketCollection.AsQueryable()
                 .Where(x => 
                 x.UpdatedOn.Value.ToString().Split()[0] == date.Date.ToString().Split()[0] &&
                 x.Status == "close" &&
                 x.Feedbackscore > 3)
                 .Select(x => x.Feedbackscore).ToList();
+
             List<int?> totalticketcount = new List<int?>();
+
             totalticketcount = _context.TicketCollection.AsQueryable()
                 .Where(x =>
-                x.UpdatedOn.ToString().Split()[0] == date.Date.ToString() &&
+                x.UpdatedOn.Value.ToString().Split()[0] == date.Date.ToString() &&
                 x.Status == "close" &&
                 x.Feedbackscore > 0)
                 .Select(x => x.Feedbackscore).ToList();
-
-            //Console.WriteLine((double)ticketscore.Sum() / totalticketcount.Count());
-            //Console.WriteLine(ticketscore.Sum()); 
-            //Console.WriteLine(totalticketcount.Count());
-
             double csatscore;
             try
             {
@@ -267,6 +267,7 @@ namespace ticket_management.Services
                 avgresolutiondata.avgresolutiontime = totalhours.Hours;
                 avgResolutionTime.Add(avgresolutiondata);
             }
+            csatscore = (double)ticketscore.Sum() / totalticketcount.Count();
             Analytics scheduledData = new Analytics
             {
                 Date = date.Date,
@@ -318,8 +319,6 @@ namespace ticket_management.Services
             await _context.AgentsCollection.InsertManyAsync(responsejson);
 
         }
-        
-
         public async Task GetEndUsers()
         {
             HttpClient httpclient = new HttpClient();

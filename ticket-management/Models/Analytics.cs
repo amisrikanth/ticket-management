@@ -17,9 +17,12 @@ namespace ticket_management.Models
         public string Id { get ; set; }
         [BsonElement("Date")]
         public DateTime Date { get; set ; }
+
         [BsonElement("AvgResolutionTime")]
         public List<AvgResolutionTime> Avgresolutiontime { get ; set ; } 
         [BsonElement("Csatscore")]
         public double Csatscore { get ; set ; }
+        [BsonElement("Customerid")]
+        public int Customerid { get ; set ; }
     }
 }

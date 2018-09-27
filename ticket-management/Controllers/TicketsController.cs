@@ -107,7 +107,6 @@ namespace ticket_management.Controllers
             string Email = await _ticketService.AssignEmail(id);
             return Ok(Email);
         } 
-
         [HttpGet("analytics/update")]
         public async Task<IActionResult> CreateAnalysis()
         {

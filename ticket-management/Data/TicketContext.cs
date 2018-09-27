@@ -44,8 +44,6 @@ namespace ticket_management.Models
                 return _db.GetCollection<Agents>("agents");
             }
         }
-
-
         public IMongoCollection<EndUser> EndUsersCollection
         {
             get
@@ -53,6 +51,5 @@ namespace ticket_management.Models
                 return _db.GetCollection<EndUser>("endUsers");
             }
         }
-
     }
 }
