@@ -102,7 +102,7 @@ namespace ticket_management.Controllers
             return Ok(ticket);
         }
 
-        [HttpGet("Assignagent")]
+        [HttpGet("Assignagent/{id}")]
         public async Task<IActionResult> assignAgent([FromRoute] string id) {
             string Email = await _ticketService.AssignEmail(id);
             return Ok(Email);
